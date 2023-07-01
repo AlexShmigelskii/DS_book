@@ -39,7 +39,7 @@ assert vector_sum([[1, 2], [3, 4], [5, 6], [7, 8]]) == [16, 20]
 
 
 def scalar_multiply(c: float, v: Vector) -> Vector:
-    """Умножает каждый элемент на c"""
+    """Умножает каждый элемент на с"""
     return [c * v_i for v_i in v]
 
 
