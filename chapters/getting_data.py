@@ -1,3 +1,5 @@
+'''
+
 # egrep.py
 import sys, re
 
@@ -132,4 +134,83 @@ with open('file.txt', 'wb') as f:
     writer = csv.writer(f, delimiter=',')
     for stock, price in today_prices.items():
         writer.writerow([stock, price])
+'''
+import re
+
+from bs4 import BeautifulSoup
+import requests
+
+
+url = "https://raw.githubusercontent.com/joelgrus/data/master/getting-data.html"
+html = requests.get(url).text
+soup = BeautifulSoup(html, 'html5lib')
+
+first_paragraph = soup.find('p')  # первый тег <p>, можно просто soup.p
+first_paragraph_text = soup.p.text  # Текст первого элемента <p>
+first_paragraph_words = soup.p.text.split()  # Слова первого элемента
+
+first_paragraph_id = soup.p['id']  # дает ошибку, если id не существует
+first_paragraph_id2 = soup.p.get('id')  # Возвращает None, если id нет
+
+all_paragraphs = soup.find_all('p')  # или просто soup('p')
+paragraphs_with_ids = [p for p in soup('p') if p.get('id')]
+
+important_paragraphs = soup('p', {'class': 'important'})
+important_paragraphs2 = soup('p', 'important')
+important_paragraphs3 = [p for p in soup('p') if 'important' in p.get('class', [])]
+
+# Элементы <span> внутри элементов <div>
+# Предупреждение: вернет тот же span несколько раз,
+# если он находится внутри нескольких элементов div.
+# Нужно быть смышленее в этом случае
+spans_inside_divs = [span
+                     for div in soup('div')  # для каждого <div> на странице
+                     for span in div('span')]  # отыскать каждый <span> внутри него
+
+# Пример: Слежение за Конгрессом
+url = 'https://www.house.gov/representatives'
+text = requests.get(url).text
+soup = BeautifulSoup(text, 'html5lib')
+
+all_urls = [a['href']
+            for a in soup('a')
+            if a.has_attr('href')]
+
+print(len(all_urls))  # Слишком много - 967
+
+# нам нужны те, которые начинаются с http:// либо https://
+# должно оканчиваться на .house.gov либо .house.gov/
+regex = r"^https?://.*\.house\.gov/?$"
+
+# напишем несколько тестов
+assert re.match(regex, "http://joel.house.gov")
+assert re.match(regex, "https://joel.house.gov")
+assert re.match(regex, "http://joel.house.gov/")
+assert re.match(regex, "https://joel.house.gov/")
+assert not re.match(regex, "joel.house.gov")
+assert not re.match(regex, "http://joel.house.com")
+assert not re.match(regex, "https://joel.house.gov/biography")
+
+# И теперь применим
+good_urls = [url for url in all_urls if re.match(regex, url)]
+
+print(len(good_urls))  # всё еще много - 880
+
+# устраним дубликаты
+good_urls = list(set(good_urls))
+
+print(len(good_urls))  # теперь 440
+
+html = requests.get('https://jayapal.house.gov').text
+soup = BeautifulSoup(html, 'html5lib')
+
+# Мы используем множество, т. к. ссылки могут появляться многократно
+links = {a['href'] for a in soup('a') if 'press releases' in a.text.lower()}
+
+print(links)
+
+
+
+
+
 
