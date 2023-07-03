@@ -72,7 +72,7 @@ def data_range(xs: List[float]) -> float:
 
 assert data_range(num_friends) == 99
 
-from linear_algebra import sum_of_squares
+from chapters.linear_algebra import sum_of_squares
 
 
 def de_mean(xs: List[float]) -> List[float]:
@@ -112,7 +112,7 @@ def interquartile_range(xs: List[float]) -> float:
 
 assert interquartile_range(num_friends) == 6
 
-from linear_algebra import dot
+from chapters.linear_algebra import dot
 
 daily_minutes = [1, 68.77, 51.25, 52.08, 38.36, 44.54, 57.13, 51.4, 41.42, 31.22, 34.76, 54.01, 38.79, 47.59, 49.1,
                  27.66, 41.03, 36.73, 48.65, 28.12, 46.62, 35.57, 32.98, 35, 26.07, 23.77, 39.73, 40.57, 31.65, 31.21,

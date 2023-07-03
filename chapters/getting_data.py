@@ -210,7 +210,42 @@ links = {a['href'] for a in soup('a') if 'press releases' in a.text.lower()}
 print(links)
 
 
+import json
 
 
+serialized = """{ "title" : "Data Science Book",
+                  "author" : "Joel Grus",
+                  "publicationYear" : 2019,
+                  "topics" : [ "data", "science", "data science"] }"""
+
+# Разобрать JSON, создав Питоновский словарь
+deserialized = json.loads(serialized)
+
+assert deserialized["publicationYear"] == 2019
+assert "data science" in deserialized["topics"]
+
+
+import requests, json
+
+
+github_user = "joelgrus"
+endpoint = f"https://api.github.com/users/{github_user}/repos"
+
+repos = json.loads(requests.get(endpoint).text)
+
+
+from  collections import Counter
+from dateutil.parser import parse
+
+dates = [parse(repo["created_at"]) for repo in repos]  # Список дат
+month_counts = Counter(date.month for date in dates)  # число месяцев
+weekday_counts = Counter(date.weekday() for date in dates)  # число будних дней
+
+last_5_repos = sorted(repos,  # последние 5 хранилищ
+                      key=lambda r: r["created_at"],
+                      reverse=True)[:5]
+
+last_5_languages = [repo["language"]  # Последние 5 языков
+                    for repo in last_5_repos]
 
 
